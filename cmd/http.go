@@ -17,6 +17,8 @@ func ServeHTTP() {
 	userV1 := e.Group("user/v1")
 	userV1.POST("/register", d.UserAPI.RegisterUser)
 	userV1.POST("/register/seller", d.UserAPI.RegisterSeller)
+	userV1.POST("/login", d.UserAPI.LoginUser)
+	userV1.POST("/login/seller", d.UserAPI.LoginSeller)
 
 	e.Start(":" + helpers.GetEnv("PORT", "9000"))
 }

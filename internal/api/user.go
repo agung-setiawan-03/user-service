@@ -34,7 +34,7 @@ func (api *UserAPI) RegisterUser(e echo.Context) error {
 
 
 	// Register new user
-	resp, err := api.UserService.RegisterUser(e.Request().Context(), &req)
+	resp, err := api.UserService.Register(e.Request().Context(), &req, "user")
 	if err != nil {
 		log.Error("Failed to register new user", err)
 		return helpers.SendResponseHTTP(e, http.StatusInternalServerError, constants.ErrInternalServer, nil)
@@ -63,12 +63,75 @@ func (api *UserAPI) RegisterSeller(e echo.Context) error {
 	}
 
 
-	// Register new user
-	resp, err := api.UserService.RegisterSeller(e.Request().Context(), &req)
+	// Register new seller
+	resp, err := api.UserService.Register(e.Request().Context(), &req, "seller")
 	if err != nil {
-		log.Error("Failed to register new user", err)
+		log.Error("Failed to register new seller", err)
 		return helpers.SendResponseHTTP(e, http.StatusInternalServerError, constants.ErrInternalServer, nil)
 	}
 
 	return helpers.SendResponseHTTP(e, http.StatusOK, constants.Success, resp)
 }
+
+
+func (api *UserAPI) LoginUser(e echo.Context) error {
+	var (
+		log = helpers.Logger
+	)
+	req := models.LoginRequest{}
+
+	// Parse first request from client
+	if err := e.Bind(&req); err != nil {
+		log.Error("Failed to parse request", err)
+		return helpers.SendResponseHTTP(e, http.StatusBadRequest, constants.ErrBadrequest, nil)
+	}
+
+	// Validate request 
+	if err := req.Validate(); err != nil {
+		log.Error("Failed to validate request", err)
+		return helpers.SendResponseHTTP(e, http.StatusBadRequest, constants.ErrBadrequest, nil)
+	}
+
+
+	// Login user
+	resp, err := api.UserService.Login(e.Request().Context(), req, "user")
+	if err != nil {
+		log.Error("Failed to login user", err)
+		return helpers.SendResponseHTTP(e, http.StatusInternalServerError, constants.ErrInternalServer, nil)
+	}
+
+	return helpers.SendResponseHTTP(e, http.StatusOK, constants.Success, resp)
+}
+
+
+
+func (api *UserAPI) LoginSeller(e echo.Context) error {
+	var (
+		log = helpers.Logger
+	)
+	req := models.LoginRequest{}
+
+	// Parse first request from client
+	if err := e.Bind(&req); err != nil {
+		log.Error("Failed to parse request", err)
+		return helpers.SendResponseHTTP(e, http.StatusBadRequest, constants.ErrBadrequest, nil)
+	}
+
+	// Validate request 
+	if err := req.Validate(); err != nil {
+		log.Error("Failed to validate request", err)
+		return helpers.SendResponseHTTP(e, http.StatusBadRequest, constants.ErrBadrequest, nil)
+	}
+
+
+	// Register seller
+	resp, err := api.UserService.Login(e.Request().Context(), req, "seller")
+	if err != nil {
+		log.Error("Failed to login user", err)
+		return helpers.SendResponseHTTP(e, http.StatusInternalServerError, constants.ErrInternalServer, nil)
+	}
+
+	return helpers.SendResponseHTTP(e, http.StatusOK, constants.Success, resp)
+}
+
+
