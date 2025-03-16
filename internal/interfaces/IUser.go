@@ -12,6 +12,8 @@ type UserRepository interface {
 	GetUserByUsername(ctx context.Context, username string, role string) (models.User, error)
 	InsertNewUserSession(ctx context.Context, session *models.UserSession) error
 	GetUserSessionByToken(ctx context.Context, token string) (models.UserSession, error)
+	GetUserSessionByRefreshToken(ctx context.Context, refreshToken string) (models.UserSession, error)
+	UpdateTokenByRefreshToken(ctx context.Context, token string, refreshToken string) error
 }
 
 type UserService interface {

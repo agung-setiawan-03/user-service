@@ -19,6 +19,7 @@ func ServeHTTP() {
 	userV1.POST("/register/seller", d.UserAPI.RegisterSeller)
 	userV1.POST("/login", d.UserAPI.LoginUser)
 	userV1.POST("/login/seller", d.UserAPI.LoginSeller)
+	userV1.PUT("/refresh-token", d.RefreshTokenAPI.RefreshToken, d.MiddlewareRefreshToken)
 
 	userV1.GET("/profile", d.UserAPI.GetProfile, d.MiddlewareValidateAuth)
 
@@ -27,8 +28,10 @@ func ServeHTTP() {
 
 type Dependency struct {
 	UserRepository interfaces.UserRepository
+
 	Healthcheck    *api.HealthCheckAPI
 	UserAPI        interfaces.UserAPI
+	RefreshTokenAPI interfaces.IRefreshTokenHandler
 }
 
 func dependencyInjection() Dependency {
@@ -42,9 +45,18 @@ func dependencyInjection() Dependency {
 		UserService: userSvc,
 	}
 
+	refreshTokenSvc := &services.RefreshTokenService{
+		UserRepo: userRepo,
+	}
+
+	refreshTokenAPI := &api.RefreshTokenHandler{
+		RefreshTokenService: refreshTokenSvc,
+	}
+
 	return Dependency{
 		UserRepository: userRepo,
 		Healthcheck:    &api.HealthCheckAPI{},
 		UserAPI:        userAPI,
+		RefreshTokenAPI: refreshTokenAPI,
 	}
 }
