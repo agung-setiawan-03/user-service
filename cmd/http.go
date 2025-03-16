@@ -20,12 +20,15 @@ func ServeHTTP() {
 	userV1.POST("/login", d.UserAPI.LoginUser)
 	userV1.POST("/login/seller", d.UserAPI.LoginSeller)
 
+	userV1.GET("/profile", d.UserAPI.GetProfile, d.MiddlewareValidateAuth)
+
 	e.Start(":" + helpers.GetEnv("PORT", "9000"))
 }
 
 type Dependency struct {
-	Healthcheck *api.HealthCheckAPI
-	UserAPI     interfaces.UserAPI
+	UserRepository interfaces.UserRepository
+	Healthcheck    *api.HealthCheckAPI
+	UserAPI        interfaces.UserAPI
 }
 
 func dependencyInjection() Dependency {
@@ -40,7 +43,8 @@ func dependencyInjection() Dependency {
 	}
 
 	return Dependency{
-		Healthcheck: &api.HealthCheckAPI{},
-		UserAPI:     userAPI,
+		UserRepository: userRepo,
+		Healthcheck:    &api.HealthCheckAPI{},
+		UserAPI:        userAPI,
 	}
 }
